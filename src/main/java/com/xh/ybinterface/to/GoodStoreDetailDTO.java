@@ -18,5 +18,7 @@ public class GoodStoreDetailDTO {
     private String manuDate;//生产日期
     private String expyEnd;//有效期止
     private String invDate;//盘存日期
+    private Integer alnum;//损溢数量
+    private BigDecimal pric;//成本单价
 
 }

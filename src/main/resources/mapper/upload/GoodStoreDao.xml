@@ -5,11 +5,12 @@
 
     <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.xh.ybinterface.to.GoodStoreDTO" id="GoodStoreTo">
-        <result property="dataCatrg" column="dataCatrg"/>
-        <result property="authPhacCodg" column="authPhacCodg"/>
-        <result property="rtalPhacCodg" column="rtalPhacCodg"/>
-        <result property="rtalPhacName" column="rtalPhacName"/>
+<!--        <result property="dataCatrg" column="dataCatrg"/>-->
+<!--        <result property="authPhacCodg" column="authPhacCodg"/>-->
+<!--        <result property="rtalPhacCodg" column="rtalPhacCodg"/>-->
+<!--        <result property="rtalPhacName" column="rtalPhacName"/>-->
         <result property="fixmedinsBchno" column="fixmedinsBchno"/>
+        <result property="billcode" column="billcode"/>
         <collection property="drugInventoryList" ofType="com.xh.ybinterface.to.GoodStoreDetailDTO">
             <result property="medListCodg" column="medListCodg"/>
             <result property="medListName" column="medListName"/>
@@ -21,12 +22,15 @@
             <result property="manuDate" column="manuDate"/>
             <result property="expyEnd" column="expyEnd"/>
             <result property="invDate" column="invDate"/>
+            <result property="alnum" column="alnum"/>
+            <result property="pric" column="pric"/>
 
         </collection>
     </resultMap>
 
     <select id="getGoodStore" resultMap="GoodStoreTo">
-select top 1 a.billcode as fixmedinsBchno ,
+select top 1 newid() as fixmedinsBchno ,
+a.billcode ,
 '1087165' as medListCodg,
 '一次性使用组织闭合夹(WS)' as medListName,
 -- '506724'as medinsListCodg,
@@ -38,16 +42,39 @@ d.PlaceNum as invCnt,
 e.batchcode as manuLotnum,
 e.ProduceDate as manuDate,
 e.ValDate as expyEnd,
-a.dates+' '+a.ontime as invDate
-from purinmt a WITH(NOLOCK)
-join purindt b WITH(NOLOCK) on a.billno=b.billno
-join goodsattr c WITH(NOLOCK)  on b.goodsid=b.goodsid
+a.dates+' '+a.ontime as invDate,
+b.ALNum as alnum,
+b.Cost as pric
+from InvntryExecmt a WITH(NOLOCK)
+join InvntryExecdt b WITH(NOLOCK) on a.billno=b.billno
+join goodsattr c WITH(NOLOCK)  on c.goodsid=b.goodsid
 join AngleBalance d WITH(NOLOCK) on b.locatid=d.locatid and b.goodsid=d.goodsid and b.AngleId=d.AngleId and a.orgid=d.OwnerId
 join batchcode e WITH(NOLOCK) on b.goodsid=e.goodsid and b.AngleId=e.AngleId
 join goodsdoc f WITH(NOLOCK) on f.goodsid=b.goodsid
 where a.caozy=#{caozy} and a.orgid=#{orgid}
 order by a.billno desc
     </select>
+<!--    select top 1 newid() as fixmedinsBchno ,-->
+<!--    '1087165' as medListCodg,-->
+<!--    '一次性使用组织闭合夹(WS)' as medListName,-->
+<!--    &#45;&#45; '506724'as medinsListCodg,-->
+<!--    &#45;&#45; '闰中密友冰爽激情装' as medinsListName,-->
+<!--    f.goodscode as medinsListCodg,-->
+<!--    f.goodsname as medinsListName,-->
+<!--    case when c.IsPres='Y' then '1' else '0' end as rxFlag,-->
+<!--    d.PlaceNum as invCnt,-->
+<!--    e.batchcode as manuLotnum,-->
+<!--    e.ProduceDate as manuDate,-->
+<!--    e.ValDate as expyEnd,-->
+<!--    a.dates+' '+a.ontime as invDate-->
+<!--    from purinmt a WITH(NOLOCK)-->
+<!--    join purindt b WITH(NOLOCK) on a.billno=b.billno-->
+<!--    join goodsattr c WITH(NOLOCK)  on b.goodsid=b.goodsid-->
+<!--    join AngleBalance d WITH(NOLOCK) on b.locatid=d.locatid and b.goodsid=d.goodsid and b.AngleId=d.AngleId and a.orgid=d.OwnerId-->
+<!--    join batchcode e WITH(NOLOCK) on b.goodsid=e.goodsid and b.AngleId=e.AngleId-->
+<!--    join goodsdoc f WITH(NOLOCK) on f.goodsid=b.goodsid-->
+<!--    where a.caozy=#{caozy} and a.orgid=#{orgid}-->
+<!--    order by a.billno desc-->
 
 
 </mapper>

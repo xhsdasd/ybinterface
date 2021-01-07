@@ -9,9 +9,8 @@ import java.math.BigDecimal;
 @ToString
 public class UploadBillDetailDTO {
     private String dyntNo; //随货单号
-    private String splerName; //供货商名称
     private String purcInvoNo; //采购发票号
-    private String memo; //备注
+    private String splerName; //供货商名称
     private String medListCodg; //医疗目录编码
     private String medListName; //医疗目录名称
     private String medinsListCodg; //医药机构目录编码
@@ -28,6 +27,7 @@ public class UploadBillDetailDTO {
     private BigDecimal purcRetnCnt; //采购/退货数量
     private String purcRetnStoinTime; //采购/退货入库时间
     private String purcRetnOpterName; //采购经办人姓名
+    private String isPurOk; //首次供应完成
 
 
 }

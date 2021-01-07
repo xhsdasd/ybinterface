@@ -8,5 +8,5 @@ public interface UploadService {
 
     void uploadGoodStore(String caozy, String orgid);
 
-    void uploadBill(String caozy, String orgid, Integer i);
+    void uploadBill(String caozy, String orgid, String type);
 }

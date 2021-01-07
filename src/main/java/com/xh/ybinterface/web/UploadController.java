@@ -40,16 +40,31 @@ public class UploadController {
     @GetMapping("goodstore")
     public void goodstore(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid){
         uploadService.uploadGoodStore(caozy,orgid);
-        uploadService.uploadBill(caozy,orgid,1);
     }
+
+    /**
+     * DSS_DSM_00009	上传单据信息	/DSS_DSM_00009
+     * @param caozy
+     * @param orgid
+     * @param type
+     */
     @GetMapping("uploadBill")
-    public void uploadBill(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid,@RequestParam("type")Integer type){
+    public void uploadBill(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid,@RequestParam("type")String type){
 //        1	采购入库	4	销售
 //        2	其他入库	5	销售退货
 //        3	采购退货	6	其他出库
 uploadService.uploadBill(caozy,orgid,type);
 
     }
+
+//    @GetMapping("changeStore")
+//    public void changeStore(){
+////        101	调拨入库	105	销毁
+////        102	调拨出库	106	其他入库
+////        103	盘盈	107	其他出库
+////        104	盘损	108	初始化入库
+//
+//    }
 
     @GetMapping("test")
     public void test(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid,@RequestParam("paidinamt") BigDecimal paidinamt) {

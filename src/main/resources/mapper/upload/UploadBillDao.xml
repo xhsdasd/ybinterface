@@ -5,18 +5,17 @@
 
     <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.xh.ybinterface.to.UploadBillDTO" id="BillTo">
-        <result property="dataCatrg" column="dataCatrg"/>
-        <result property="authPhacCodg" column="authPhacCodg"/>
-        <result property="rtalPhacCodg" column="rtalPhacCodg"/>
-        <result property="rtalPhacName" column="rtalPhacName"/>
+<!--        <result property="dataCatrg" column="dataCatrg"/>-->
+<!--        <result property="authPhacCodg" column="authPhacCodg"/>-->
+<!--        <result property="rtalPhacCodg" column="rtalPhacCodg"/>-->
+<!--        <result property="rtalPhacName" column="rtalPhacName"/>-->
         <result property="fixmedinsBchno" column="fixmedinsBchno"/>
         <result property="supnDocType" column="supnDocType"/>
 
         <collection property="drugReciptList" ofType="com.xh.ybinterface.to.UploadBillDetailDTO">
             <result property="dyntNo" column="dyntNo"/>
-            <result property="splerName" column="splerName"/>
             <result property="purcInvoNo" column="purcInvoNo"/>
-            <result property="memo" column="memo"/>
+            <result property="splerName" column="splerName"/>
             <result property="medListCodg" column="medListCodg"/>
             <result property="medListName" column="medListName"/>
             <result property="medinsListCodg" column="medinsListCodg"/>
@@ -33,18 +32,22 @@
             <result property="purcRetnCnt" column="purcRetnCnt"/>
             <result property="purcRetnStoinTime" column="purcRetnStoinTime"/>
             <result property="purcRetnOpterName" column="purcRetnOpterName"/>
+            <result property="isPurOk" column="isPurOk"/>
 
 
         </collection>
     </resultMap>
 
     <select id="getBillParm" resultMap="BillTo">
-select top 1 a.billno as fixmedinsBchno ,
+select top 1 newid() as fixmedinsBchno ,
 #{type} as supnDocType,
 a.billcode as dyntNo,
+<if test='type == "3"'>
+    case when j.InvoiceCode is null or j.InvoiceCode='' then '1234' else  a.Invoice end  as purcInvoNo,
+</if>
 g.businessname as splerName,
-'1087165' as medListCodg,
-'一次性使用组织闭合夹(WS)' as medListName,
+'2020120336291' as medListCodg,
+'头孢丙烯分散片(银力舒-白云山)' as medListName,
 f.goodscode as medinsListCodg,
 f.goodsname as medinsListName,
 case when c.IsPres='Y' then '1' else '0' end as rxFlag,
@@ -58,18 +61,26 @@ f.GoodsSpec as spec,
 '100000' as dosformType,
 b.num as purcRetnCnt,
 h.staffname as purcRetnOpterName,
-b.Price as finlTrnsPric
+b.Price as finlTrnsPric,
+c.IsPurOk as isPurOk
 
 from purinmt a WITH(NOLOCK)
 join purindt b WITH(NOLOCK) on a.billno=b.billno
-join goodsattr c WITH(NOLOCK) on b.goodsid=b.goodsid
+join goodsattr c WITH(NOLOCK) on c.goodsid=b.goodsid
 join AngleBalance d WITH(NOLOCK) on b.locatid=d.locatid and b.goodsid=d.goodsid and b.AngleId=d.AngleId and a.orgid=d.OwnerId
 join batchcode e WITH(NOLOCK) on b.goodsid=e.goodsid and b.AngleId=e.AngleId
 join goodsdoc f WITH(NOLOCK) on f.goodsid=b.goodsid
 join businessdoc g WITH(NOLOCK) on g.businessid=a.SuppliersId
 join staffdoc h WITH(NOLOCK) on h.staffid=a.SaleManId
+        <if test='type == "3"'>
+           left join InvoiceBill i on i.RfBillNo=a.billno
+           left join InvoiceMt j on j.billno=i.billno
+        </if>
 
 where a.caozy=#{caozy} and a.orgid=#{orgid}
+<if test='type == "3"'>
+   and  a.ruleid='2ajc0ikub06h2dbl'
+</if>
 order by a.billno desc
     </select>
 

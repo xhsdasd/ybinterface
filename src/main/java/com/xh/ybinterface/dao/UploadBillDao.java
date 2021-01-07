@@ -9,5 +9,5 @@ import org.apache.ibatis.annotations.Param;
 public interface UploadBillDao extends BaseMapper<UploadBillDTO> {
 
 
-    UploadBillDTO getBillParm(@Param("caozy") String caozy, @Param("orgid") String orgid, @Param("type") Integer type);
+    UploadBillDTO getBillParm(@Param("caozy") String caozy, @Param("orgid") String orgid, @Param("type") String type);
 }
