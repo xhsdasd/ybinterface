@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xh.ybinterface.dao.ChangeStoreDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.xh.ybinterface.to.StoreChangeDTO" id="ChangeStoreTo">
+        <!--        <result property="dataCatrg" column="dataCatrg"/>-->
+        <!--        <result property="authPhacCodg" column="authPhacCodg"/>-->
+        <!--        <result property="rtalPhacCodg" column="rtalPhacCodg"/>-->
+        <!--        <result property="rtalPhacName" column="rtalPhacName"/>-->
+        <result property="billcode" column="billcode"/>
+        <collection property="drugProdInvChgList" ofType="com.xh.ybinterface.to.StoreChangeDetailDTO">
+            <result property="medListCodg" column="medListCodg"/>
+            <result property="medListName" column="medListName"/>
+            <result property="medinsListCodg" column="medinsListCodg"/>
+            <result property="medinsListName" column="medinsListName"/>
+            <result property="invChgType" column="invChgType"/>
+            <result property="rxFlag" column="rxFlag"/>
+            <result property="pric" column="pric"/>
+            <result property="cnt" column="cnt"/>
+            <result property="invChgTime" column="invChgTime"/>
+        </collection>
+    </resultMap>
+    <update id="modifyYBflag">
+        update RetBillMt set ybflag='Y' where ybflag='N'
+    </update>
+
+    <select id="getLXChangeStore" resultMap="ChangeStoreTo">
+        select
+        a.billcode ,
+        case when 0 > b.paidinamt then '106' else '107' end as invChgType,
+        '1087165' as medListCodg,
+        '一次性使用组织闭合夹(WS)' as medListName,
+        -- '506724'as medinsListCodg,
+        -- '闰中密友冰爽激情装' as medinsListName,
+        f.goodscode as medinsListCodg,
+        f.goodsname as medinsListName,
+        case when c.IsPres='Y' then '1' else '0' end as rxFlag,
+        ABS(b.num) as cnt,
+        b.traprice as pric,
+        CONVERT(varchar,GETDATE(),120) as invChgTime
+        from RetBillMt a WITH(NOLOCK)
+        join RetGoodsDt b WITH(NOLOCK) on a.billno=b.billno
+        join goodsattr c WITH(NOLOCK) on c.goodsid=b.goodsid
+        join goodsdoc f WITH(NOLOCK) on f.goodsid=b.goodsid
+where a.ybflag='N'
+    </select>
+
+
+</mapper>

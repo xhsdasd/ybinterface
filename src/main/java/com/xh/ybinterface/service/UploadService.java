@@ -6,7 +6,11 @@ public interface UploadService {
 
     void uploadBuy(String caozy, String orgid, BigDecimal paidinamt);
 
-    void uploadGoodStore(String caozy, String orgid);
+    void uploadGoodStore(String caozy, String orgid, String type);
 
     void uploadBill(String caozy, String orgid, String type);
+
+//    void uploadChangeStore(String caozy, String orgid);
+
+    void uploadChangeStore(String billno);
 }

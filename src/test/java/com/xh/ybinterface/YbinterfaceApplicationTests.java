@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+
 @SpringBootTest
 class YbinterfaceApplicationTests {
     @Autowired
@@ -15,7 +17,14 @@ class YbinterfaceApplicationTests {
     UploadService service;
     @Test
     void contextLoads() {
-        service.uploadBill("K2CUH45TGF5","O2F7DMABNBR","1");
+//        service.uploadChangeStore("312485");
+
+//        service.uploadBuy("K2CUH45TGF5","O2CUH459RUT",new BigDecimal(252));
+//        service.uploadChangeStore("312686");
+//        1(String), K2CUH45TGF5(String), O2CUH459RUT(String)
+//        service.uploadBill("K2CUH45TGF5","O2CUH459RUT","1");
+//        service.uploadGoodStore("K2CUH45TGF5","O2CUH459RUT","0");
+        service.uploadChangeStore("");
     }
 
 }

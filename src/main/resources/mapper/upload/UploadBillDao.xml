@@ -39,7 +39,7 @@
     </resultMap>
 
     <select id="getBillParm" resultMap="BillTo">
-select top 1 newid() as fixmedinsBchno ,
+select
 #{type} as supnDocType,
 a.billcode as dyntNo,
 <if test='type == "3"'>
@@ -76,12 +76,11 @@ join staffdoc h WITH(NOLOCK) on h.staffid=a.SaleManId
            left join InvoiceBill i on i.RfBillNo=a.billno
            left join InvoiceMt j on j.billno=i.billno
         </if>
-
-where a.caozy=#{caozy} and a.orgid=#{orgid}
+        join (select max(billno) as id from purinmt WITH(NOLOCK) where caozy=#{caozy}  and orgid=#{orgid}) x on x.id=a.billno
 <if test='type == "3"'>
-   and  a.ruleid='2ajc0ikub06h2dbl'
+   where   a.ruleid='2ajc0ikub06h2dbl'
 </if>
-order by a.billno desc
+
     </select>
 
 

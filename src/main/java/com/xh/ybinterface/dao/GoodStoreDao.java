@@ -11,4 +11,7 @@ public interface GoodStoreDao extends BaseMapper<GoodStoreDTO> {
 
 
      GoodStoreDTO getGoodStore(@Param("caozy") String caozy, @Param("orgid") String orgid);
+
+     GoodStoreDTO getFirstGoodStore(@Param("orgid") String orgid);
+
 }

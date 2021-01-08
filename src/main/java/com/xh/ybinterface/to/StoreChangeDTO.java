@@ -14,5 +14,6 @@ public class StoreChangeDTO {
     private String rtalPhacName;//医药机构名称
     private String fixmedinsBchno;//定点医药机构批次流水号
     private List<StoreChangeDetailDTO> drugProdInvChgList;//商品库存变更记录信息集合
+    private String billcode;//系统单据
 
 }

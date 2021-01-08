@@ -29,7 +29,7 @@
     </resultMap>
 
     <select id="getGoodStore" resultMap="GoodStoreTo">
-select top 1 newid() as fixmedinsBchno ,
+select
 a.billcode ,
 '1087165' as medListCodg,
 '一次性使用组织闭合夹(WS)' as medListName,
@@ -51,30 +51,33 @@ join goodsattr c WITH(NOLOCK)  on c.goodsid=b.goodsid
 join AngleBalance d WITH(NOLOCK) on b.locatid=d.locatid and b.goodsid=d.goodsid and b.AngleId=d.AngleId and a.orgid=d.OwnerId
 join batchcode e WITH(NOLOCK) on b.goodsid=e.goodsid and b.AngleId=e.AngleId
 join goodsdoc f WITH(NOLOCK) on f.goodsid=b.goodsid
-where a.caozy=#{caozy} and a.orgid=#{orgid}
-order by a.billno desc
-    </select>
-<!--    select top 1 newid() as fixmedinsBchno ,-->
-<!--    '1087165' as medListCodg,-->
-<!--    '一次性使用组织闭合夹(WS)' as medListName,-->
-<!--    &#45;&#45; '506724'as medinsListCodg,-->
-<!--    &#45;&#45; '闰中密友冰爽激情装' as medinsListName,-->
-<!--    f.goodscode as medinsListCodg,-->
-<!--    f.goodsname as medinsListName,-->
-<!--    case when c.IsPres='Y' then '1' else '0' end as rxFlag,-->
-<!--    d.PlaceNum as invCnt,-->
-<!--    e.batchcode as manuLotnum,-->
-<!--    e.ProduceDate as manuDate,-->
-<!--    e.ValDate as expyEnd,-->
-<!--    a.dates+' '+a.ontime as invDate-->
-<!--    from purinmt a WITH(NOLOCK)-->
-<!--    join purindt b WITH(NOLOCK) on a.billno=b.billno-->
-<!--    join goodsattr c WITH(NOLOCK)  on b.goodsid=b.goodsid-->
-<!--    join AngleBalance d WITH(NOLOCK) on b.locatid=d.locatid and b.goodsid=d.goodsid and b.AngleId=d.AngleId and a.orgid=d.OwnerId-->
-<!--    join batchcode e WITH(NOLOCK) on b.goodsid=e.goodsid and b.AngleId=e.AngleId-->
-<!--    join goodsdoc f WITH(NOLOCK) on f.goodsid=b.goodsid-->
-<!--    where a.caozy=#{caozy} and a.orgid=#{orgid}-->
-<!--    order by a.billno desc-->
+join (select max(billno) as id from InvntryExecmt WITH(NOLOCK) where caozy=#{caozy}  and orgid=#{orgid}) x on x.id=a.billno
 
+    </select>
+
+    <select id="getFirstGoodStore" resultMap="GoodStoreTo">
+select
+a.billcode ,
+'1087165' as medListCodg,
+'一次性使用组织闭合夹(WS)' as medListName,
+-- '506724'as medinsListCodg,
+-- '闰中密友冰爽激情装' as medinsListName,
+f.goodscode as medinsListCodg,
+f.goodsname as medinsListName,
+case when c.IsPres='Y' then '1' else '0' end as rxFlag,
+b.orgbalnum as invCnt,
+e.batchcode as manuLotnum,
+e.ProduceDate as manuDate,
+e.ValDate as expyEnd,
+a.dates+' '+a.ontime as invDate,
+b.orgbalcost as pric
+from GoodAcctmt a WITH(NOLOCK)
+join GoodAcctdt b WITH(NOLOCK) on a.AcctPageId=b.AcctPageId
+join goodsattr c WITH(NOLOCK)  on c.goodsid=b.goodsid
+join batchcode e WITH(NOLOCK) on b.goodsid=e.goodsid and b.AngleId=e.AngleId
+join goodsdoc f WITH(NOLOCK) on f.goodsid=b.goodsid
+join (select max(AcctPageId) as id from GoodAcctmt WITH(NOLOCK)  ) x on x.id=a.AcctPageId
+where a.orgid=#{orgid}
+    </select>
 
 </mapper>

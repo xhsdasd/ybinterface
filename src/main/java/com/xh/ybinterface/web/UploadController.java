@@ -2,11 +2,10 @@ package com.xh.ybinterface.web;
 
 import com.xh.ybinterface.service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 public class UploadController {
@@ -27,7 +26,6 @@ public class UploadController {
     @GetMapping("sendBuy")
     public  void send(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid,@RequestParam("paidinamt") BigDecimal paidinamt){
 
-
        uploadService.uploadBuy(caozy,orgid,paidinamt);
 
     }
@@ -36,10 +34,11 @@ public class UploadController {
      * DSS_DSM_00008	上传商品盘存信息	/DSS_DSM_00008
      * @param caozy
      * @param orgid
+     * @param type  0表示初装，1非初装
      */
     @GetMapping("goodstore")
-    public void goodstore(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid){
-        uploadService.uploadGoodStore(caozy,orgid);
+    public void goodstore(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid,@RequestParam("type") String type){
+        uploadService.uploadGoodStore(caozy,orgid,type);
     }
 
     /**
@@ -53,18 +52,29 @@ public class UploadController {
 //        1	采购入库	4	销售
 //        2	其他入库	5	销售退货
 //        3	采购退货	6	其他出库
+
 uploadService.uploadBill(caozy,orgid,type);
 
     }
 
-//    @GetMapping("changeStore")
-//    public void changeStore(){
-////        101	调拨入库	105	销毁
-////        102	调拨出库	106	其他入库
-////        103	盘盈	107	其他出库
-////        104	盘损	108	初始化入库
-//
-//    }
+    /**
+     * DSS_DSM_00010	上传商品的库存变更信息	/DSS_DSM_00010
+     * @param caozy
+     * @param orgid
+     * @param type
+     */
+    //    public void changeStore(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid,@RequestParam("type")String type){
+
+    @GetMapping("changeStore")
+    public void changeStore(@RequestParam("billno")String billno){
+//        101	调拨入库	105	销毁
+//        102	调拨出库	106	其他入库
+//        103	盘盈	107	其他出库
+//        104	盘损	108	初始化入库
+
+      uploadService.uploadChangeStore(billno);
+
+    }
 
     @GetMapping("test")
     public void test(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid,@RequestParam("paidinamt") BigDecimal paidinamt) {
