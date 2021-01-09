@@ -23,7 +23,7 @@
         </collection>
     </resultMap>
     <update id="modifyYBflag">
-        update RetBillMt set ybflag='Y' where ybflag='N'
+        update RetBillMt set ybflag='Y' where ybflag='N' and billcode=#{billcode}
     </update>
 
     <select id="getLXChangeStore" resultMap="ChangeStoreTo">

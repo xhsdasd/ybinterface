@@ -250,10 +250,10 @@ public class UploadServiceImp implements UploadService {
         try {
             log.info("上传库存变更信息,类型(" + paramDTO.getDrugProdInvChgList().get(0).getInvChgType() + ")，----信息：" + paramDTO);
             RespVo dss_dsm_00010 = commSend("DSS_DSM_00010", JSON.toJSONString(paramDTO), 4);
-            if(paramDTO.getDrugProdInvChgList().get(0).getInvChgType().equals("105") || paramDTO.getDrugProdInvChgList().get(0).getInvChgType().equals("106"))
+            if(paramDTO.getDrugProdInvChgList().get(0).getInvChgType().equals("107") || paramDTO.getDrugProdInvChgList().get(0).getInvChgType().equals("106"))
             {//零售库存信息变更成功后修改标志位位Y
                 if(dss_dsm_00010.getCode()==0) {
-                    changeStoreDao.modifyYBflag();
+                    changeStoreDao.modifyYBflag(paramDTO.getBillcode());
                 }
             }
         } catch (IOException e) {
