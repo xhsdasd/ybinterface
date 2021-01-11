@@ -24,17 +24,11 @@
 
     <select id="getBuyMedicineTo" resultMap="BuyMedicineTo">
         SELECT
--- 	'test_4401' as rtalPhacCodg ,
--- 	'对外测试机构(药店接口)' as rtalPhacName,
 	a.BillCode as buymedDocCodg,
 	 a.PaidInAmt as selAmt,
-	 --CONVERT(varchar,a.Dates,101) as buymedDate,
 	 a.Dates as buymedDate,
-	 'test_4401A' as authPhacCodg,
--- 	 newid() as tranIdSn,
 	 d.staffname as crterName,
-	--c.MedCareCode as medinsListCodg,
-	'202012088001' as medinsListCodg,
+	c.goodscode as medinsListCodg,
 	b.RetailP as rtalPric,
 	b.num as selCnt,
 	b.PaidInAmt as selAmtd ,
@@ -45,7 +39,7 @@ FROM         dbo.TRBILLMT  AS a WITH(NOLOCK) INNER JOIN
                       dbo.STAFFDOC  AS d WITH(NOLOCK) ON a.caozy = d.STAFFID INNER JOIN
                       dbo.BATCHCODE  AS e WITH(NOLOCK) ON b.AngleId = e.AngleId AND b.GoodsId = e.GoodsId
 join (select max(billno) as id from TRBILLMT WITH(NOLOCK) where caozy=#{caozy} and PaidInAmt=#{paidinamt} and orgid=#{orgid}) x on x.id=a.billno
-
+where c.ybcode!=''
     </select>
 
 

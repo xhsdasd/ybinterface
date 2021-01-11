@@ -23,17 +23,15 @@
         </collection>
     </resultMap>
     <update id="modifyYBflag">
-        update RetBillMt set ybflag='Y' where ybflag='N' and billcode=#{billcode}
+        update RetBillMt  set ybflag='Y' where ybflag='N' and dates=#{date}
     </update>
 
     <select id="getLXChangeStore" resultMap="ChangeStoreTo">
         select
         a.billcode ,
         case when 0 > b.paidinamt then '106' else '107' end as invChgType,
-        '1087165' as medListCodg,
-        '一次性使用组织闭合夹(WS)' as medListName,
-        -- '506724'as medinsListCodg,
-        -- '闰中密友冰爽激情装' as medinsListName,
+        f.ybcode as medListCodg,
+        f.ybname as medListName,
         f.goodscode as medinsListCodg,
         f.goodsname as medinsListName,
         case when c.IsPres='Y' then '1' else '0' end as rxFlag,
@@ -44,7 +42,9 @@
         join RetGoodsDt b WITH(NOLOCK) on a.billno=b.billno
         join goodsattr c WITH(NOLOCK) on c.goodsid=b.goodsid
         join goodsdoc f WITH(NOLOCK) on f.goodsid=b.goodsid
-where a.ybflag='N'
+where  1=1
+and f.ybcode!=''
+and a.dates=#{date}
     </select>
 
 

@@ -1,7 +1,10 @@
 package com.xh.ybinterface;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xh.ybinterface.dao.BuyMedicineDao;
 import com.xh.ybinterface.dao.UploadBillDao;
 import com.xh.ybinterface.service.UploadService;
+import com.xh.ybinterface.to.BuyMedicineDTO;
 import com.xh.ybinterface.vo.ConfigVo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ class YbinterfaceApplicationTests {
     ConfigVo configVo;
     @Autowired
     UploadService service;
+    @Autowired
+    BuyMedicineDao buyMedicineDao;
     @Test
     void contextLoads() {
 //        service.uploadChangeStore("312485");
@@ -24,7 +29,8 @@ class YbinterfaceApplicationTests {
 //        1(String), K2CUH45TGF5(String), O2CUH459RUT(String)
 //        service.uploadBill("K2CUH45TGF5","O2CUH459RUT","1");
 //        service.uploadGoodStore("K2CUH45TGF5","O2CUH459RUT","0");
-        service.uploadChangeStore("");
+        Integer buymedDate = buyMedicineDao.selectCount(new QueryWrapper<BuyMedicineDTO>().eq("buymedDate", "2020-01-11"));
+        System.out.println(buymedDate);
     }
 
 }

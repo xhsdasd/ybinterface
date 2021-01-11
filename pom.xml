@@ -95,6 +95,7 @@
             <!--添加配置跳过测试-->
 
         </plugins>
+
         <finalName>ybinterface</finalName>
     </build>
 

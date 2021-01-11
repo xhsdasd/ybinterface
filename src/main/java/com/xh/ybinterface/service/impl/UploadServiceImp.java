@@ -66,14 +66,16 @@ public class UploadServiceImp implements UploadService {
     public void uploadBuy(String caozy, String orgid, BigDecimal paidinamt) {
 
         BuyMedicineDTO paramDTO = buyMedicineDao.getBuyMedicineTo(caozy, orgid, paidinamt);
-        BeanUtils.copyProperties(configVo, paramDTO);
-        paramDTO.setTranIdSn(UUID.randomUUID().toString());
-        try {
-            log.info("上传购药信息(单据编号:" + paramDTO.getBuymedDocCodg() + ")，----信息：" + paramDTO);
-            commSend("DSS_DSM_00003", JSON.toJSONString(paramDTO), 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.error("上传购药信息(单据编号:" + paramDTO.getBuymedDocCodg() + ")错误，----错误信息：" + e.getMessage());
+        if(paramDTO!=null) {
+            BeanUtils.copyProperties(configVo, paramDTO);
+            paramDTO.setTranIdSn(UUID.randomUUID().toString());
+            try {
+                log.info("上传购药信息(单据编号:" + paramDTO.getBuymedDocCodg() + ")，----信息：" + paramDTO);
+                commSend("DSS_DSM_00003", JSON.toJSONString(paramDTO), 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.error("上传购药信息(单据编号:" + paramDTO.getBuymedDocCodg() + ")错误，----错误信息：" + e.getMessage());
+            }
         }
     }
 
@@ -90,66 +92,69 @@ public class UploadServiceImp implements UploadService {
         if(type.equals("0")){
             //商品初装,并且需要记录一笔商品库存变更
             paramDTO=goodStoreDao.getFirstGoodStore(orgid);
-            BeanUtils.copyProperties(configVo, paramDTO);
-            paramDTO.setFixmedinsBchno(UUID.randomUUID().toString());
-            List<StoreChangeDetailDTO> dList = paramDTO.getDrugInventoryList().stream().map(d -> {
-                StoreChangeDetailDTO storeChangeDetailDTO = new StoreChangeDetailDTO();
-                BeanUtils.copyProperties(d, storeChangeDetailDTO);
-                storeChangeDetailDTO.setInvChgType("108");
-                storeChangeDetailDTO.setInvChgTime(d.getInvDate());
-                storeChangeDetailDTO.setCnt(d.getInvCnt());
-                return storeChangeDetailDTO;
-            }).collect(Collectors.toList());
-            if (dList != null && dList.size() > 0) {
-                StoreChangeDTO storeChangeDTO = new StoreChangeDTO();
-                BeanUtils.copyProperties(paramDTO, storeChangeDTO);
-                storeChangeDTO.setDrugProdInvChgList(dList);
-                uploadStoreChange(storeChangeDTO);
+            if(paramDTO!=null) {
+                BeanUtils.copyProperties(configVo, paramDTO);
+                paramDTO.setFixmedinsBchno(UUID.randomUUID().toString());
+                List<StoreChangeDetailDTO> dList = paramDTO.getDrugInventoryList().stream().map(d -> {
+                    StoreChangeDetailDTO storeChangeDetailDTO = new StoreChangeDetailDTO();
+                    BeanUtils.copyProperties(d, storeChangeDetailDTO);
+                    storeChangeDetailDTO.setInvChgType("108");
+                    storeChangeDetailDTO.setInvChgTime(d.getInvDate());
+                    storeChangeDetailDTO.setCnt(d.getInvCnt());
+                    return storeChangeDetailDTO;
+                }).collect(Collectors.toList());
+                if (dList != null && dList.size() > 0) {
+                    StoreChangeDTO storeChangeDTO = new StoreChangeDTO();
+                    BeanUtils.copyProperties(paramDTO, storeChangeDTO);
+                    storeChangeDTO.setDrugProdInvChgList(dList);
+                    uploadStoreChange(storeChangeDTO, "");
+                }
             }
-
 
         }else {
              paramDTO = goodStoreDao.getGoodStore(caozy, orgid);
-            BeanUtils.copyProperties(configVo, paramDTO);
-            paramDTO.setFixmedinsBchno(UUID.randomUUID().toString());
-            //盘损
-            List<GoodStoreDetailDTO> beforeZeroList = paramDTO.getDrugInventoryList().stream().filter(d -> d.getAlnum() > 0).collect(Collectors.toList());
-            //盘盈
-            List<GoodStoreDetailDTO> afterZeroList = paramDTO.getDrugInventoryList().stream().filter(d -> d.getAlnum() < 0).collect(Collectors.toList());
+            if(paramDTO!=null) {
+                BeanUtils.copyProperties(configVo, paramDTO);
+                paramDTO.setFixmedinsBchno(UUID.randomUUID().toString());
+                //盘损
+                List<GoodStoreDetailDTO> beforeZeroList = paramDTO.getDrugInventoryList().stream().filter(d -> d.getAlnum() > 0).collect(Collectors.toList());
+                //盘盈
+                List<GoodStoreDetailDTO> afterZeroList = paramDTO.getDrugInventoryList().stream().filter(d -> d.getAlnum() < 0).collect(Collectors.toList());
 //        103	盘盈
 //        104	盘损 上传库存变更
-            List<StoreChangeDetailDTO> beforeDList = beforeZeroList.parallelStream().map(d -> {
-                StoreChangeDetailDTO storeChangeDetailDTO = new StoreChangeDetailDTO();
-                BeanUtils.copyProperties(d, storeChangeDetailDTO);
-                storeChangeDetailDTO.setInvChgType("104");
-                storeChangeDetailDTO.setInvChgTime(d.getInvDate());
-                storeChangeDetailDTO.setCnt(new BigDecimal(Math.abs(d.getAlnum())));
+                List<StoreChangeDetailDTO> beforeDList = beforeZeroList.parallelStream().map(d -> {
+                    StoreChangeDetailDTO storeChangeDetailDTO = new StoreChangeDetailDTO();
+                    BeanUtils.copyProperties(d, storeChangeDetailDTO);
+                    storeChangeDetailDTO.setInvChgType("104");
+                    storeChangeDetailDTO.setInvChgTime(d.getInvDate());
+                    storeChangeDetailDTO.setCnt(new BigDecimal(Math.abs(d.getAlnum())));
 
-                return storeChangeDetailDTO;
-            }).collect(Collectors.toList());
+                    return storeChangeDetailDTO;
+                }).collect(Collectors.toList());
 
-            List<StoreChangeDetailDTO> afterDList = afterZeroList.parallelStream().map(d -> {
-                StoreChangeDetailDTO storeChangeDetailDTO = new StoreChangeDetailDTO();
-                BeanUtils.copyProperties(d, storeChangeDetailDTO);
-                storeChangeDetailDTO.setInvChgType("103");
-                storeChangeDetailDTO.setInvChgTime(d.getInvDate());
-                storeChangeDetailDTO.setCnt(new BigDecimal(d.getAlnum()));
+                List<StoreChangeDetailDTO> afterDList = afterZeroList.parallelStream().map(d -> {
+                    StoreChangeDetailDTO storeChangeDetailDTO = new StoreChangeDetailDTO();
+                    BeanUtils.copyProperties(d, storeChangeDetailDTO);
+                    storeChangeDetailDTO.setInvChgType("103");
+                    storeChangeDetailDTO.setInvChgTime(d.getInvDate());
+                    storeChangeDetailDTO.setCnt(new BigDecimal(d.getAlnum()));
 
-                return storeChangeDetailDTO;
-            }).collect(Collectors.toList());
+                    return storeChangeDetailDTO;
+                }).collect(Collectors.toList());
 
-            if (beforeDList != null && beforeDList.size() > 0) {
-                StoreChangeDTO storeChangeDTO = new StoreChangeDTO();
-                BeanUtils.copyProperties(paramDTO, storeChangeDTO);
-                storeChangeDTO.setDrugProdInvChgList(beforeDList);
-                uploadStoreChange(storeChangeDTO);
-            }
+                if (beforeDList != null && beforeDList.size() > 0) {
+                    StoreChangeDTO storeChangeDTO = new StoreChangeDTO();
+                    BeanUtils.copyProperties(paramDTO, storeChangeDTO);
+                    storeChangeDTO.setDrugProdInvChgList(beforeDList);
+                    uploadStoreChange(storeChangeDTO, "");
+                }
 
-            if (afterDList != null && afterDList.size() > 0) {
-                StoreChangeDTO storeChangeDTO = new StoreChangeDTO();
-                BeanUtils.copyProperties(paramDTO, storeChangeDTO);
-                storeChangeDTO.setDrugProdInvChgList(afterDList);
-                uploadStoreChange(storeChangeDTO);
+                if (afterDList != null && afterDList.size() > 0) {
+                    StoreChangeDTO storeChangeDTO = new StoreChangeDTO();
+                    BeanUtils.copyProperties(paramDTO, storeChangeDTO);
+                    storeChangeDTO.setDrugProdInvChgList(afterDList);
+                    uploadStoreChange(storeChangeDTO, "");
+                }
             }
         }
 
@@ -176,41 +181,43 @@ public class UploadServiceImp implements UploadService {
     @Override
     public void uploadBill(String caozy, String orgid, String type) {
         UploadBillDTO paramDTO = uploadBillDao.getBillParm(caozy, orgid, type);
-        BeanUtils.copyProperties(configVo, paramDTO);
-        paramDTO.setFixmedinsBchno(UUID.randomUUID().toString());
-        try {
-            log.info("上传单据信息(类型" + type + ";单据编号(" + paramDTO.getDrugReciptList().get(0).getDyntNo() + "))，----信息：" + paramDTO);
-            commSend("DSS_DSM_00009", JSON.toJSONString(paramDTO), 3);
+        if(paramDTO!=null) {
+            BeanUtils.copyProperties(configVo, paramDTO);
+            paramDTO.setFixmedinsBchno(UUID.randomUUID().toString());
+            try {
+                log.info("上传单据信息(类型" + type + ";单据编号(" + paramDTO.getDrugReciptList().get(0).getDyntNo() + "))，----信息：" + paramDTO);
+                commSend("DSS_DSM_00009", JSON.toJSONString(paramDTO), 3);
 
-            List<StoreChangeDetailDTO> storeDlist = paramDTO.getDrugReciptList().stream().map(d -> {
-                StoreChangeDetailDTO storeChangeDetailDTO = new StoreChangeDetailDTO();
-                if (type.equals("1")) {
-                    storeChangeDetailDTO.setInvChgType("101");
+                List<StoreChangeDetailDTO> storeDlist = paramDTO.getDrugReciptList().stream().map(d -> {
+                    StoreChangeDetailDTO storeChangeDetailDTO = new StoreChangeDetailDTO();
+                    BeanUtils.copyProperties(d,storeChangeDetailDTO);
+                    if (type.equals("1")) {
+                        storeChangeDetailDTO.setInvChgType("101");
+                    }
+                    if (type.equals("3")) {
+                        storeChangeDetailDTO.setInvChgType("102");
+                    }
+
+                    storeChangeDetailDTO.setPric(d.getFinlTrnsPric());
+                    storeChangeDetailDTO.setCnt(new BigDecimal(Math.abs(d.getPurcRetnCnt().doubleValue())));
+                    storeChangeDetailDTO.setInvChgTime(d.getPurcRetnStoinTime());
+                    return storeChangeDetailDTO;
+
+                }).collect(Collectors.toList());
+                //上传库存变更
+                if (storeDlist != null && storeDlist.size() > 0 && storeDlist.get(0) != null) {
+                    StoreChangeDTO storeChangeDTO = new StoreChangeDTO();
+                    BeanUtils.copyProperties(paramDTO, storeChangeDTO);
+                    storeChangeDTO.setDrugProdInvChgList(storeDlist);
+                    uploadStoreChange(storeChangeDTO, "");
                 }
-                if (type.equals("3")) {
-                    storeChangeDetailDTO.setInvChgType("102");
-                }
 
-                storeChangeDetailDTO.setPric(d.getFinlTrnsPric());
-                storeChangeDetailDTO.setCnt(d.getPurcRetnCnt());
-                storeChangeDetailDTO.setInvChgTime(d.getPurcRetnStoinTime());
-                return storeChangeDetailDTO;
-
-            }).collect(Collectors.toList());
-            //上传库存变更
-            if (storeDlist != null && storeDlist.size() > 0 && storeDlist.get(0) != null) {
-                StoreChangeDTO storeChangeDTO = new StoreChangeDTO();
-                BeanUtils.copyProperties(paramDTO, storeChangeDTO);
-                storeChangeDTO.setDrugProdInvChgList(storeDlist);
-                uploadStoreChange(storeChangeDTO);
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.error("上传单据信息(类型" + type + ";单据编号(" + paramDTO.getDrugReciptList().get(0).getDyntNo() + "))，----错误信息：" + e.getMessage());
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.error("上传单据信息(类型" + type + ";单据编号(" + paramDTO.getDrugReciptList().get(0).getDyntNo() + "))，----错误信息：" + e.getMessage());
         }
-
-
 
     }
 
@@ -220,20 +227,21 @@ public class UploadServiceImp implements UploadService {
      * @param orgid
      *
      */
-//    @Override
-//    public void uploadChangeStore(String caozy, String orgid) {
-//        StoreChangeDTO paramDto= changeStoreDao.getLXChangeStore(caozy,orgid);
-//        log.info("上传零售库存变更记录,单据("+paramDto.getBillcode()+")");
-//        uploadStoreChange(paramDto);
-//    }
 
     @Override
-    public void uploadChangeStore(String billno) {
-        StoreChangeDTO paramDto= changeStoreDao.getLXChangeStore(billno);
-        BeanUtils.copyProperties(configVo,paramDto);
-        paramDto.setFixmedinsBchno(UUID.randomUUID().toString());
-        log.info("上传零售库存变更记录,单据("+paramDto.getBillcode()+")");
-        uploadStoreChange(paramDto);
+    public void uploadChangeStore(String date) {
+        StoreChangeDTO paramDto= changeStoreDao.getLXChangeStore(date);
+        if(paramDto!=null) {
+            BeanUtils.copyProperties(configVo, paramDto);
+            paramDto.setFixmedinsBchno(UUID.randomUUID().toString());
+            log.info("上传零售库存变更记录,单据(" + paramDto.getBillcode() + ")");
+            uploadStoreChange(paramDto,date);
+        }
+    }
+
+    @Override
+    public void test(String dates) {
+        changeStoreDao.modifyYBflag(dates);
     }
 
 
@@ -243,17 +251,18 @@ public class UploadServiceImp implements UploadService {
      * //        102	调拨出库	106	其他入库
      * //        103	盘盈	107	其他出库
      * //        104	盘损	108	初始化入库
-     *
      * @param paramDTO
+     * @param date
+     *
      */
-    public void uploadStoreChange(StoreChangeDTO paramDTO) {
+    public void uploadStoreChange(StoreChangeDTO paramDTO, String date) {
         try {
             log.info("上传库存变更信息,类型(" + paramDTO.getDrugProdInvChgList().get(0).getInvChgType() + ")，----信息：" + paramDTO);
             RespVo dss_dsm_00010 = commSend("DSS_DSM_00010", JSON.toJSONString(paramDTO), 4);
             if(paramDTO.getDrugProdInvChgList().get(0).getInvChgType().equals("107") || paramDTO.getDrugProdInvChgList().get(0).getInvChgType().equals("106"))
             {//零售库存信息变更成功后修改标志位位Y
                 if(dss_dsm_00010.getCode()==0) {
-                    changeStoreDao.modifyYBflag(paramDTO.getBillcode());
+                    changeStoreDao.modifyYBflag(date);
                 }
             }
         } catch (IOException e) {

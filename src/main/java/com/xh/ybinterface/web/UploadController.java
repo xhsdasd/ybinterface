@@ -66,18 +66,18 @@ uploadService.uploadBill(caozy,orgid,type);
     //    public void changeStore(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid,@RequestParam("type")String type){
 
     @GetMapping("changeStore")
-    public void changeStore(@RequestParam("billno")String billno){
+    public void changeStore(@RequestParam("date")String date){
 //        101	调拨入库	105	销毁
 //        102	调拨出库	106	其他入库
 //        103	盘盈	107	其他出库
 //        104	盘损	108	初始化入库
 
-      uploadService.uploadChangeStore(billno);
+      uploadService.uploadChangeStore(date);
 
     }
 
     @GetMapping("test")
-    public void test(@RequestParam("caozy")String caozy,@RequestParam("orgid")String orgid,@RequestParam("paidinamt") BigDecimal paidinamt) {
-        System.out.println(1);
+    public void test(@RequestParam("dates")String dates) {
+        uploadService.test(dates);
     }
 }

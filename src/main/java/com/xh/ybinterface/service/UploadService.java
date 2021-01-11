@@ -12,5 +12,8 @@ public interface UploadService {
 
 //    void uploadChangeStore(String caozy, String orgid);
 
-    void uploadChangeStore(String billno);
+    void uploadChangeStore(String date);
+
+    void test(String dates);
+
 }

@@ -46,8 +46,8 @@ a.billcode as dyntNo,
     case when j.InvoiceCode is null or j.InvoiceCode='' then '1234' else  a.Invoice end  as purcInvoNo,
 </if>
 g.businessname as splerName,
-'2020120336291' as medListCodg,
-'头孢丙烯分散片(银力舒-白云山)' as medListName,
+f.ybcode as medListCodg,
+f.ybname as medListName,
 f.goodscode as medinsListCodg,
 f.goodsname as medinsListName,
 case when c.IsPres='Y' then '1' else '0' end as rxFlag,
@@ -77,8 +77,9 @@ join staffdoc h WITH(NOLOCK) on h.staffid=a.SaleManId
            left join InvoiceMt j on j.billno=i.billno
         </if>
         join (select max(billno) as id from purinmt WITH(NOLOCK) where caozy=#{caozy}  and orgid=#{orgid}) x on x.id=a.billno
+        where f.ybcode!=''
 <if test='type == "3"'>
-   where   a.ruleid='2ajc0ikub06h2dbl'
+   and   a.ruleid='2ajc0ikub06h2dbl'
 </if>
 
     </select>

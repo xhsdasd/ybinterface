@@ -12,8 +12,8 @@ public interface ChangeStoreDao extends BaseMapper<StoreChangeDTO> {
 
 //     StoreChangeDTO getLXChangeStore(@Param("caozy") String caozy, @Param("orgid") String orgid);
 
-     StoreChangeDTO getLXChangeStore(@Param("billno") String billno);
+     StoreChangeDTO getLXChangeStore(@Param("date") String date);
 
-     void modifyYBflag(@Param("billcode") String billcode);
+     void modifyYBflag(@Param("date") String date);
 
 }
