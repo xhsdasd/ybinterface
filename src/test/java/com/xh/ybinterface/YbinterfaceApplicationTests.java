@@ -25,12 +25,12 @@ class YbinterfaceApplicationTests {
 //        service.uploadChangeStore("312485");
 
 //        service.uploadBuy("K2CUH45TGF5","O2CUH459RUT",new BigDecimal(252));
-//        service.uploadChangeStore("312686");
+        service.uploadChangeStore("2021-01-12");
 //        1(String), K2CUH45TGF5(String), O2CUH459RUT(String)
 //        service.uploadBill("K2CUH45TGF5","O2CUH459RUT","1");
 //        service.uploadGoodStore("K2CUH45TGF5","O2CUH459RUT","0");
-        Integer buymedDate = buyMedicineDao.selectCount(new QueryWrapper<BuyMedicineDTO>().eq("buymedDate", "2020-01-11"));
-        System.out.println(buymedDate);
+//        Integer buymedDate = buyMedicineDao.selectCount(new QueryWrapper<BuyMedicineDTO>().eq("buymedDate", "2020-01-11"));
+//        System.out.println(buymedDate);
     }
 
 }

@@ -23,12 +23,18 @@
         </collection>
     </resultMap>
     <update id="modifyYBflag">
-        update RetBillMt  set ybflag='Y' where ybflag='N' and dates=#{date}
+         update  a set ybflag='Y'
+ from RetBillMt a
+ join retgoodsdt b
+on a.billno=b.billno
+join goodsdoc c on c.goodsid=b.goodsid
+ where ybflag='N' and a.dates=#{date}
+
     </update>
 
     <select id="getLXChangeStore" resultMap="ChangeStoreTo">
         select
-        a.billcode ,
+        a.dates as billcode ,
         case when 0 > b.paidinamt then '106' else '107' end as invChgType,
         f.ybcode as medListCodg,
         f.ybname as medListName,
