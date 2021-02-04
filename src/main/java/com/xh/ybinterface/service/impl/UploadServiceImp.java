@@ -1,14 +1,14 @@
 package com.xh.ybinterface.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.xh.ybinterface.dao.BuyMedicineDao;
 import com.xh.ybinterface.dao.ChangeStoreDao;
 import com.xh.ybinterface.dao.GoodStoreDao;
 import com.xh.ybinterface.dao.UploadBillDao;
 import com.xh.ybinterface.service.UploadService;
 import com.xh.ybinterface.to.*;
-import com.xh.ybinterface.vo.ConfigVo;
-import com.xh.ybinterface.vo.RespVo;
+import com.xh.ybinterface.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
@@ -20,6 +20,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -244,6 +245,26 @@ public class UploadServiceImp implements UploadService {
         changeStoreDao.modifyYBflag(dates);
     }
 
+//【药店目录匹配信息查询】DSS_DSM_00013
+    @Override
+    public void match() {
+        try {
+            MatchReq matchReq = new MatchReq();
+            BeanUtils.copyProperties(configVo,matchReq);
+
+            RespVo resp=commSend("DSS_DSM_00013",JSON.toJSONString(matchReq),13);
+            if(resp.getCode()==0){
+                String data = JSONObject.parseObject(resp.getData()).getString("data");
+                List<MatchItem> matchItems = JSON.parseArray(data, MatchItem.class);
+                uploadBillDao.updateMatch(matchItems);
+            }else {
+                log.error("获取匹配信息错误");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 4		DSS_DSM_00010	上传商品的库存变更信息
@@ -305,27 +326,28 @@ public class UploadServiceImp implements UploadService {
         CloseableHttpResponse execute = build.execute(httpPost);
         String result = EntityUtils.toString(execute.getEntity(), "UTF-8");
         log.info("【接口返回结果-result】" + result);
-        RespVo respVo = JSON.parseObject(result, RespVo.class);
-        if (respVo.getCode() != 0) {
-            switch (type) {
-                case 1:
-                    log.error("上传购药信息错误：errOr:" + result);
-                    break;
-                case 2:
-                    log.error("上传商品盘存信息错误：errOr:" + result);
-                    break;
-                case 3:
-                    log.error("上传单据信息错误：errOr:" + result);
-                    break;
-                case 4:
-                    log.error("上传库存信息变更错误：errOr:" + result);
-                    break;
-                case 5:
-                    break;
-            }
+            RespVo respVo = JSON.parseObject(result, RespVo.class);
+            if (respVo.getCode() != 0) {
+                switch (type) {
+                    case 1:
+                        log.error("上传购药信息错误：errOr:" + result);
+                        break;
+                    case 2:
+                        log.error("上传商品盘存信息错误：errOr:" + result);
+                        break;
+                    case 3:
+                        log.error("上传单据信息错误：errOr:" + result);
+                        break;
+                    case 4:
+                        log.error("上传库存信息变更错误：errOr:" + result);
+                        break;
+                    case 5:
+                        break;
+                }
 
         }
-        return respVo;
+            return respVo;
+
 
     }
 

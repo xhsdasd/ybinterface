@@ -37,6 +37,12 @@
 
         </collection>
     </resultMap>
+    <update id="updateMatch">
+        <foreach collection="data" item="item" index="index">
+            update goodsdoc set ybname=#{item.medListName},ybcode=#{item.medListCodg}
+            where goodscode=#{item.medinsListCodg};
+        </foreach>
+    </update>
 
     <select id="getBillParm" resultMap="BillTo">
 select

@@ -75,7 +75,12 @@ uploadService.uploadBill(caozy,orgid,type);
       uploadService.uploadChangeStore(date);
 
     }
+//1.6.1	【药店目录匹配信息查询】DSS_DSM_00013
+    @GetMapping("match")
+    public  void match(){
+        uploadService.match();
 
+    }
     @GetMapping("test")
     public void test(@RequestParam("dates")String dates) {
         uploadService.test(dates);
